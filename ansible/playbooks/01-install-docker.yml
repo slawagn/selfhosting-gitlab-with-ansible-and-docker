@@ -1,0 +1,43 @@
+
+---
+- name: install docker
+  hosts:       all
+  remote_user: "{{ user }}"
+  become:      true
+  vars:
+    user:                "ansible"
+    ansible_become_pass: "{{ ansiblepassword }}"
+  tasks:
+  - name: add gpg key
+    rpm_key:
+      key: "https://download.docker.com/linux/fedora/gpg"
+      state: present
+
+  - name: add repository
+    yum_repository:
+      name:        docker
+      description: docker repository
+      baseurl:     "https://download.docker.com/linux/fedora/36/x86_64/stable"
+      enabled:     true
+
+  - name: install docker
+    dnf:
+      name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+      state: latest
+      update_cache: true
+
+  - name: add user to docker group
+    user:
+      name:   "{{ user }}"
+      groups: docker
+      append: yes
+
+  - name: start docker
+    service:
+      name:    docker
+      state:   started
+      enabled: true
