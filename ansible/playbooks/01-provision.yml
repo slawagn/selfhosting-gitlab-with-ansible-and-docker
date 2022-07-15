@@ -1,10 +1,11 @@
 ---
 - name: setup for further provisioning
   hosts:       all
-  remote_user: ansible
+  remote_user: "{{ user }}"
   become:      yes
   vars:
     ansible_become_password: "{{ ansiblepassword }}"
+    user:                    "ansible"
   tasks:
   - name: update packages
     dnf:

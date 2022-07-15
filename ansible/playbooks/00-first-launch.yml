@@ -1,10 +1,12 @@
 ---
 - hosts: all
   remote_user: root
+  vars:
+    user: "ansible"
   tasks:
   - name: create ansible user
     user:
-      name:       ansible
+      name:       "{{ user }}"
       group:      wheel
       createhome: yes
       state:      present
@@ -12,7 +14,7 @@
       
   - name: deploy ssh key
     authorized_key:
-      user:  ansible
+      user:  "{{ user }}"
       key:   "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
       state: present
 
