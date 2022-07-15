@@ -1,0 +1,14 @@
+---
+- name: deploy the app
+  hosts:       all
+  remote_user: "{{ user }}"
+  vars:
+    ansible_become_pass: "{{ password }}"
+  tasks:
+    - name: copy app's files to remote host
+      copy:
+        src:  "../../app/"
+        dest: "/home/{{ user }}/app/"
+
+    - name:  executes a command starting the app
+      shell: "echo 'lets imagine this command does something' >> /home/{{ user }}/app/flag.txt"

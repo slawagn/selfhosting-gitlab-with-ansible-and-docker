@@ -1,12 +1,10 @@
-
 ---
 - name: install docker
   hosts:       all
   remote_user: "{{ user }}"
   become:      true
   vars:
-    user:                "ansible"
-    ansible_become_pass: "{{ ansiblepassword }}"
+    ansible_become_pass: "{{ password }}"
   tasks:
   - name: add gpg key
     rpm_key:

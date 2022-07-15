@@ -1,8 +1,6 @@
 ---
 - hosts: all
   remote_user: root
-  vars:
-    user: "ansible"
   tasks:
   - name: create ansible user
     user:
@@ -10,7 +8,7 @@
       group:      wheel
       createhome: yes
       state:      present
-      password: "{{ ansiblepassword | password_hash('sha512') }}"
+      password:   "{{ password | password_hash('sha512') }}"
       
   - name: deploy ssh key
     authorized_key:
