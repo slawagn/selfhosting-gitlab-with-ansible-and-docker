@@ -1,0 +1,14 @@
+prerequisites:
+  - devops.company.example points to a VM
+    VM runs fedora 36 (otherwise YMMV)
+    root login is enabled
+  - 'admin-pass' vault contains key-value pair:
+      "ansiblepassword: <whateverpasswordyouwant>"
+
+running ./00-first-launch will create an admin (wheel) user
+with name 'ansible' and password specified in 'admin-pass' vault,
+deploy your public ssh key
+and disable ssh password authentication as well as root login 
+
+further provisioning will use 'admin-pass' vault to get the password
+for tasks requiring superuser privileges
