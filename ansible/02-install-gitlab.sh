@@ -4,4 +4,4 @@ ansible-playbook                \
   -i  $path/hosts.ini           \
   -e @$path/user.vault          \
     --ask-vault-pass            \
-  $path/playbooks/02-deploy.yml
+  $path/playbooks/02-install-gitlab.yml

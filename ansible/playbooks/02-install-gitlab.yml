@@ -1,0 +1,14 @@
+---
+- name:  deploy the app
+  hosts: gitlab
+  remote_user: "{{ user }}"
+  vars:
+    ansible_become_pass: "{{ password }}"
+  tasks:
+    - name: copy files to remote host
+      copy:
+        src:  "../../compose-files/gitlab/"
+        dest: "/home/{{ user }}/gitlab/"
+
+    - name:  startup gitlab
+      shell: "docker compose -f /home/{{ user }}/gitlab/docker-compose.yml up -d"
