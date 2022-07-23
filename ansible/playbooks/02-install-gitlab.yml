@@ -14,4 +14,6 @@
     - name:  startup gitlab
       shell: "docker compose -f /home/{{ user }}/gitlab/docker-compose.yml up -d"
       environment:
-        GITLAB_ROOT_PASSWORD: "{{ password }}"
+        GITLAB_ROOT_PASSWORD:  "{{ password }}"
+        GITLAB_EXTERNAL_URL:   "{{ hostvars[inventory_hostname].gitlab_url }}"
+        REGISTRY_EXTERNAL_URL: "{{ hostvars[inventory_hostname].registry_url }}"
