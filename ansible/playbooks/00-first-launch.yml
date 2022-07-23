@@ -2,7 +2,7 @@
 - hosts: all
   remote_user: root
   tasks:
-  - name: create ansible user
+  - name: create user
     user:
       name:       "{{ user }}"
       group:      wheel
@@ -10,7 +10,7 @@
       state:      present
       password:   "{{ password | password_hash('sha512') }}"
       
-  - name: deploy ssh key
+  - name: deploy your public ssh key to remote host
     authorized_key:
       user:  "{{ user }}"
       key:   "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
