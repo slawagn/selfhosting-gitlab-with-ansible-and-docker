@@ -2,6 +2,7 @@
 - name:  deploy the app
   hosts: gitlab
   remote_user: "{{ user }}"
+  become: true
   vars:
     ansible_become_pass: "{{ password }}"
   tasks:
@@ -9,6 +10,8 @@
       copy:
         src:  "../../compose-files/gitlab/"
         dest: "/home/{{ user }}/gitlab/"
-
+        
     - name:  startup gitlab
       shell: "docker compose -f /home/{{ user }}/gitlab/docker-compose.yml up -d"
+      environment:
+        GITLAB_ROOT_PASSWORD: "{{ password }}"

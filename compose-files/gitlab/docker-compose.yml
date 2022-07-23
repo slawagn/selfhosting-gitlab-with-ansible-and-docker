@@ -7,6 +7,7 @@ services:
     restart: always
     hostname: gitlab.company.example
     environment:
+      GITLAB_ROOT_PASSWORD: '${GITLAB_ROOT_PASSWORD}'
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'https://gitlab.company.example'
     ports:
