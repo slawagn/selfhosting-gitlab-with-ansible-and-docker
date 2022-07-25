@@ -139,7 +139,7 @@ The script will try to fetch the certificate from your gitlab instance
 (in `03.1`, this folder is mounted into `gitlab-runner` container)
 and `/etc/docker/certs.d/` (this allows to log into registry from worker).
 
-### `03.1-install-gitlab-runner
+### `03.1-install-gitlab-runner`
 
 Affects `workers`
 
