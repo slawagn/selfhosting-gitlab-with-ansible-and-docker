@@ -10,12 +10,13 @@ services:
       GITLAB_ROOT_PASSWORD:   '${GITLAB_ROOT_PASSWORD}'
       GITLAB_OMNIBUS_CONFIG: |
         external_url          'https://${GITLAB_EXTERNAL_URL}'
-        registry_external_url "https://${REGISTRY_EXTERNAL_URL}"
+        registry_external_url "https://${GITLAB_EXTERNAL_URL}:${REGISTRY_EXTERNAL_PORT}"
         letsencrypt['enable'] = true
     ports:
       - '80:80'
       - '443:443'
       - '2289:22'
+      - '${REGISTRY_EXTERNAL_PORT}:${REGISTRY_EXTERNAL_PORT}'
     volumes:
       - 'gitlab_config:/etc/gitlab'
       - 'gitlab_logs:/var/log/gitlab'

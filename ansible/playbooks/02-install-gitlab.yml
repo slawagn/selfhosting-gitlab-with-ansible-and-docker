@@ -11,9 +11,9 @@
         src:  "../../compose-files/gitlab/"
         dest: "/home/{{ user }}/gitlab/"
         
-    - name:  startup gitlab
+    - name: startup gitlab
       shell: "docker compose -f /home/{{ user }}/gitlab/docker-compose.yml up -d"
       environment:
-        GITLAB_ROOT_PASSWORD:  "{{ password }}"
-        GITLAB_EXTERNAL_URL:   "{{ hostvars[inventory_hostname].gitlab_url }}"
-        REGISTRY_EXTERNAL_URL: "{{ hostvars[inventory_hostname].registry_url }}"
+        GITLAB_ROOT_PASSWORD:   "{{ password }}"
+        GITLAB_EXTERNAL_URL:    "{{ hostvars[inventory_hostname].gitlab_url }}"
+        REGISTRY_EXTERNAL_PORT: "{{ hostvars[inventory_hostname].registry_port }}"
