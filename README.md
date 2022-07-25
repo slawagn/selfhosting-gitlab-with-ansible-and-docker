@@ -62,6 +62,8 @@ That one logs in as root and creates user with credentials from vault.
 ## Scripts overview
 ### `00-first-launch`
 
+Affects all hosts
+
 It is assumed that a remote server has `root` user with password known to you
 and SSH access enabled.
 
@@ -77,6 +79,8 @@ as well as root login.
 
 ### `01-install-docker`
 
+Affects all hosts
+
 Logs in with credentials from `ansible/user.vault` to remote host,
 installs docker and adds user to `docker` group
 (I have not yet bothered with configuring Docker to run rootless).
@@ -87,6 +91,8 @@ if you run distribution other than Fedora
 it's just a small piece of the url that you would need to edit)
 
 ### `02-install-gitlab`
+
+Affects `gitlab` host
 
 It is assumed that ports 80, 443, 2289
 and whichever one is specified in `hosts.ini` (`registry_port` variable)
@@ -122,6 +128,8 @@ You will need to place the token in `hosts.ini` **before** you run `03.1`.
 
 ### `03.0-make-runner-trust-gitlab-(optional)`
 
+Affects `workers`
+
 This script is **optional**: you only need to run it if your gitlab instance
 uses a self-signed certificate.
 
@@ -132,6 +140,8 @@ The script will try to fetch the certificate from your gitlab instance
 and `/etc/docker/certs.d/` (this allows to log into registry from worker).
 
 ### `03.1-install-gitlab-runner
+
+Affects `workers`
 
 By this moment, you should obtain a runner registration token (see `02`).
 This token is to be placed in `hosts.ini`'s `registration_token` variable
