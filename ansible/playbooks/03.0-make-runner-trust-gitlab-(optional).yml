@@ -1,5 +1,5 @@
 ---
-- name: tell gitlab-runner to trust the self-signed certificate
+- name: make gitlab-runner and docker daemon trust the self-signed certificate
     (skip if your gitlab instance doesn't use self-signed certificate)
   hosts:       workers
   remote_user: "{{ user }}"
@@ -36,7 +36,7 @@
         echo -n |
         openssl s_client
         -connect $GITLAB_INSTANCE_URL:443
-        -servername https://$GITLAB_INSTANCE_URL
+        -servername https://$GITLAB_INSTANCE_URL:$REGISTRY_PORT
         | openssl x509
-        > /etc/docker/certs.d/$GITLAB_INSTANCE_URL:REGISTRY_PORT/ca.crt
+        > /etc/docker/certs.d/$GITLAB_INSTANCE_URL:$REGISTRY_PORT/ca.crt
       
