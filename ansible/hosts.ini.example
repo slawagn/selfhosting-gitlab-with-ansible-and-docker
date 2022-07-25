@@ -1,5 +1,6 @@
 [gitlab]
-gitlab.company.example gitlab_url=gitlab.company.example registry_port=5050
+gitlab.company.example  gitlab_url=gitlab.domain.example registry_port=5050
 
 [workers]
-worker1.company.example registration_token=GR1348941r3ryejviJ84xe-YErgET
+worker1.company.example registration_token=AbRaCaDaBrA
+192.168.122.2           registration_token=AbRaCaDaBrA
