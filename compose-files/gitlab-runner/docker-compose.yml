@@ -1,0 +1,18 @@
+version: "3.6"
+
+services:
+  gitlab:
+    image:          gitlab/gitlab-runner:latest
+    container_name: gitlab-runner
+    restart:        always
+    volumes:
+      - 'gitlab_runner_config:/etc/gitlab-runner'
+      - './certs:/etc/gitlab-runner/certs/'
+      - './certs:/home/gitlab-runner/.gitlab-runner/certs/'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    shm_size: '256m'
+    privileged: true
+
+volumes:
+  gitlab_runner_config:
+    driver: local

@@ -1,0 +1,73 @@
+---
+- name:  deploy gitlab runner
+  hosts:       workers
+  remote_user: "{{ user }}"
+  become:      true
+  vars:
+    ansible_become_pass: "{{ password }}"
+  tasks:
+    - name: copy gitlab-runner's compose file to remote host
+      copy:
+        src:  "../../compose-files/gitlab-runner/docker-compose.yml"
+        dest: "/home/{{ user }}/gitlab-runner/docker-compose.yml"
+    
+    - name: startup gitlab-runner
+      shell: "docker compose -f /home/{{ user }}/gitlab-runner/docker-compose.yml up -d"
+
+    - name: register a runner
+      shell: >
+        docker exec -it gitlab-runner
+        gitlab-runner register -n
+        --url https://{{ hostvars[groups['gitlab'][0]].gitlab_url }}
+        --registration-token {{ hostvars[inventory_hostname].registration_token }}
+        --executor docker --description "Deployment Runner"
+        --docker-image "docker:stable"
+        --tag-list deployment
+        --docker-privileged
+
+    - name: create gitlab user with no password
+      user:
+        name:       gitlab
+        state:      present
+        createhome: yes
+        groups:     wheel,docker
+        append:     yes
+        password:   "!"
+
+    - name: create ~/.ssh directory for gitlab user
+      file:
+        path:  /home/gitlab/.ssh
+        state: directory
+        mode:  '0700'
+
+    - name: generate an ssh keypair for gitlab user
+      openssh_keypair:
+        path: /home/gitlab/.ssh/id_rsa
+
+    - name: read contents of public ssh key
+      slurp:
+        src:    /home/gitlab/.ssh/id_rsa.pub
+      register: id_rsa_pub
+    
+    - name: authorize public key for gitlab user
+      authorized_key:
+        user: gitlab
+        key:  "{{ id_rsa_pub['content'] | b64decode }}"
+
+    - name: read contents of private ssh key
+      slurp:
+        src:    /home/gitlab/.ssh/id_rsa
+      register: id_rsa
+
+    - name: print private ssh key to console
+      debug:
+        msg: |
+          These are the contents of ~/.ssh/id_rsa private key on remote worker.
+          In your gitlab project, create an environment variable ID_RSA
+          and store the contents there. Never expose the contents anywhere else.
+          Make sure the environment variable has 'File' type.
+          Also create SERVER_USER variable with value 'gitlab'
+          and SERVER_HOST var with either ip or domain address of this worker.
+          You will also have to remove indentation before you paste
+          the key into gitlab, duh 
+          {{ id_rsa['content'] | b64decode }}
