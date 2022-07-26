@@ -1,7 +1,7 @@
 ---
 - name: make gitlab-runner and docker daemon trust the self-signed certificate
     (skip if your gitlab instance doesn't use self-signed certificate)
-  hosts:       workers
+  hosts:       runners
   remote_user: "{{ user }}"
   become:      true
   vars:
