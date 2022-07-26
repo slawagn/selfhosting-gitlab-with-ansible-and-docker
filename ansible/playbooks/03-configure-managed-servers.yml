@@ -1,0 +1,81 @@
+---
+- name: create gitlab user on gitlab node and managed servers
+  hosts:       managed-servers,gitlab
+  remote_user: "{{ user }}"
+  become:      true
+  vars:
+    ansible_become_pass: "{{ password }}"
+  tasks:
+    - name: create gitlab users with no password
+      user:
+        name:       gitlab
+        state:      present
+        createhome: yes
+        groups:     wheel,docker
+        append:     yes
+        password:   "!"
+
+    - name: create temporary directory for ssh keypair
+      file:
+        path:  /home/{{ user }}/.tmp/
+        state: directory
+        mode:  '0700'
+      run_once: True
+
+    - name: generate an ssh keypair
+      openssh_keypair:
+        path:  "/home/{{ user }}/.tmp/id_rsa"
+      run_once: True
+
+    - name: read contents of public ssh key
+      slurp:
+        src:    "/home/{{ user }}/.tmp/id_rsa.pub"
+      register: id_rsa_pub
+      run_once: true
+
+    - name: read contents of private ssh key
+      slurp:
+        src:    "/home/{{ user }}/.tmp/id_rsa"
+      register: id_rsa
+      run_once: true
+    
+    - name: delete temporary directory
+      file:
+        path:  "/home/{{ user }}/.tmp"
+        state: absent
+
+    - name: authorize public ssh key on managed servers and remove all others
+      authorized_key:
+        user:      gitlab
+        key:       "{{ id_rsa_pub['content'] | b64decode }}"
+        exclusive: yes
+      when: inventory_hostname in groups['managed-servers']
+
+    - name: print private ssh key to console
+      debug:
+        msg: |
+          These are the contents of a private key
+          that can be used to log in as 'gitlab' user to EVERY SERVER
+          managed by your Gitlab instance.
+          As an administrator, in your Gitlab instance (not project)
+          you need to create an environment variable ID_RSA
+          and store the key there (Menu > Admin > Settings > CI/CD > Variables)
+          Never expose its contents anywhere else.
+          Make sure the environment variable has 'File' type.
+
+          {{ id_rsa['content'] | b64decode }}
+
+          In each of your projects, you will be creating HOSTS env file variable
+          where on each line there will be a string of format [user@]host[:port]
+          specifying the host that your projects will be deployed to.
+          This way you can deploy one project multiple hosts simply by adding
+          another addres into your HOSTS environment variable.
+
+          In your .gitlab-ci.yml (specific to each project),
+          as part of the deploy stage, you will be executing commands of form
+          pssh -h $HOSTS -I gitlab -x "-i $ID_RSA -o StrictHostKeyChecking=no" "command"
+          You may create an alias:
+          alias pssh_servers="pssh -h $HOSTS -I gitlab -x "-i $ID_RSA -o StrictHostKeyChecking=no"'
+          Then you should be able to execute the same command on all servers
+          with 'pssh_servers command'
+      run_once: true
