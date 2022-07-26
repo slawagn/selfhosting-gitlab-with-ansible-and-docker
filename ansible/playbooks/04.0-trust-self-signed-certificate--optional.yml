@@ -1,6 +1,5 @@
 ---
-- name: make gitlab-runner and docker daemon trust the self-signed certificate
-    (skip if your gitlab instance doesn't use self-signed certificate)
+- name: make gitlab-runner trust the self-signed certificate
   hosts:       runners
   remote_user: "{{ user }}"
   become:      true
@@ -23,6 +22,16 @@
         | openssl x509
         > /home/{{ user }}/gitlab-runner/certs/$GITLAB_INSTANCE_URL.crt
 
+- name: make docker daemon on managed servers trust the self-signed certificate
+  hosts:       managed-servers
+  remote_user: "{{ user }}"
+  become:      true
+  vars:
+    ansible_become_pass: "{{ password }}"
+  environment:
+    GITLAB_INSTANCE_URL: "{{ hostvars[groups['gitlab'][0]].gitlab_url }}"
+    REGISTRY_PORT:       "{{ hostvars[groups['gitlab'][0]].registry_port }}"
+  tasks:
     - name: create /etc/docker/certs.d/$GITLAB_INSTANCE_URL:$REGISTRY_PORT directory
       file:
         path:  /etc/docker/certs.d/$GITLAB_INSTANCE_URL:$REGISTRY_PORT
@@ -31,7 +40,7 @@
       file:
         path:  /etc/docker/certs.d/$GITLAB_INSTANCE_URL:$REGISTRY_PORT/ca.crt
         state: touch
-    - name: make DOCKER DAEMON trust gitlab's certificate
+    - name: make DOCKER DAEMON trust registry's certificate
       shell: >
         echo -n |
         openssl s_client
@@ -39,4 +48,3 @@
         -servername https://$GITLAB_INSTANCE_URL:$REGISTRY_PORT
         | openssl x509
         > /etc/docker/certs.d/$GITLAB_INSTANCE_URL:$REGISTRY_PORT/ca.crt
-      

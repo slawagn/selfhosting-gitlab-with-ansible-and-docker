@@ -4,4 +4,4 @@ ansible-playbook       \
   -i  $path/hosts.ini  \
   -e @$path/user.vault \
     --ask-vault-pass   \
-  $path/playbooks/03.0-make-runner-trust-gitlab-(optional).yml
+  $path/playbooks/04.0-trust-self-sugned-certificate--optional.yml

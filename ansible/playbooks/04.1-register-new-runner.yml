@@ -6,6 +6,11 @@
   vars:
     ansible_become_pass: "{{ password }}"
   tasks:
+    - name: make sure ~/gitlab-runner is a directory
+      file:
+        path: "/home/{{ user }}/gitlab-runner"
+        state: directory
+
     - name: copy gitlab-runner's compose file to remote host
       copy:
         src:  "../../compose-files/gitlab-runner/docker-compose.yml"

@@ -4,4 +4,4 @@ ansible-playbook       \
   -i  $path/hosts.ini  \
   -e @$path/user.vault \
     --ask-vault-pass   \
-  $path/playbooks/03.1-install-gitlab-runner.yml
+  $path/playbooks/04.1-register-new-runner.yml
